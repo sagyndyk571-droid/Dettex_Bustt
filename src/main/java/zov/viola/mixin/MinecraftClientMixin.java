@@ -29,12 +29,12 @@ public class MinecraftClientMixin {
       cancellable = true
    )
    private void getWindowTitle(CallbackInfoReturnable<String> cir) {
-      if (Viola.getInstance().isPanicMode()) {
-         cir.setReturnValue("Sodium 1.21.4");
-      } else {
-         cir.setReturnValue(
-            "Viola Client 1.21.4 | SRC BY NEXXY"
-         );
+       if (Viola.getInstance().isPanicMode()) {
+          cir.setReturnValue("Sodium 1.21.11");
+       } else {
+          cir.setReturnValue(
+             "DettexClient 1.21.11"
+          );
       }
    }
 

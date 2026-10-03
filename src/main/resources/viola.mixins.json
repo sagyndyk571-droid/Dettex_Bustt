@@ -16,6 +16,7 @@
   ],
   "client": [
     "AbstractClientPlayerEntityMixin",
+    "BiomePrecipitationMixin",
     "BlockMixin",
     "BlockEntityRenderDispatcherMixin",
     "BossBarHudAccessor",
@@ -53,6 +54,7 @@
     "PlayerListHudAccessor",
     "PressableWidgetMixin",
     "ScreenMixin",
+    "SimpleOptionAccessor",
     "SkyRenderingMixin",
     "SliderWidgetAccessor",
     "SliderWidgetMixin",

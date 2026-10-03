@@ -37,17 +37,19 @@ public class DropdownClickGuiScreen extends Screen implements IMinecraft {
       return this.w4d60n2;
    }
 
-   private float ds7ib() {
-      ClickGui module = Instance.get(ClickGui.class);
-      if (module == null) {
-         return 1.0F;
-      } else {
-         float windowWidth = mc.getWindow().getScaledWidth();
-         float windowHeight = mc.getWindow().getScaledHeight();
-         float baseScale = Math.min(windowWidth / 740.0F, windowHeight / 395.0F);
-         return Math.max(0.9F, baseScale * (float)module.size.getValue());
-      }
-   }
+    private float ds7ib() {
+       ClickGui module = Instance.get(ClickGui.class);
+       float raw;
+       if (module == null) {
+          raw = 1.0F;
+       } else {
+          float windowWidth = mc.getWindow().getScaledWidth();
+          float windowHeight = mc.getWindow().getScaledHeight();
+          float baseScale = Math.min(windowWidth / 740.0F, windowHeight / 395.0F);
+          raw = Math.max(0.9F, baseScale * (float)module.size.getValue());
+       }
+       return Math.round(raw * 20.0F) / 20.0F;
+    }
 
    @Override
    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
@@ -63,16 +65,16 @@ public class DropdownClickGuiScreen extends Screen implements IMinecraft {
          float centerY = windowHeight / 2.0F;
          int mouseGx = (int)((mouseX - centerX) / guiScale + centerX);
          int mouseGy = (int)((mouseY - centerY) / guiScale + centerY);
-         DrawUtil.drawRoundBlur(0.0F, 0.0F, windowWidth, windowHeight, 0.0F, ColorProvider.setAlpha(-15331297, (int)(245.0F * progress)), 24.0F);
-         DrawUtil.drawRound(0.0F, 0.0F, windowWidth, windowHeight, 0.0F, ColorProvider.setAlpha(-16447990, (int)(150.0F * progress)));
+          DrawUtil.drawRoundBlur(0.0F, 0.0F, windowWidth, windowHeight, 0.0F, ColorProvider.setAlpha(-15331297, (int)(245.0F * progress)), 10.0F);
+          DrawUtil.drawRound(0.0F, 0.0F, windowWidth, windowHeight, 0.0F, ColorProvider.setAlpha(-16447990, (int)(90.0F * progress)));
          Scissor.setGuiTransform(guiScale, centerX, centerY);
          Matrix4fStack modelView = RenderSystem.getModelViewStack();
          modelView.pushMatrix();
          modelView.translate(centerX, centerY, 0.0F);
          modelView.scale(guiScale, guiScale, 1.0F);
          modelView.translate(-centerX, -centerY, 0.0F);
-         float posX = (windowWidth / guiScale - DropdownGuiLayout.getTotalCategoriesWidth()) / 2.0F;
-         float posY = Math.max(12.0F, (windowHeight / guiScale - 396.0F) * 0.49F);
+          float posX = Math.round((windowWidth / guiScale - DropdownGuiLayout.getTotalCategoriesWidth()) / 2.0F);
+          float posY = Math.max(12.0F, Math.round((windowHeight / guiScale - 396.0F) * 0.49F));
          this.udc7jic.setPos(posX, posY);
          this.udc7jic.setRenderOffsetY((1.0F - progress) * 15.0F);
          this.bL4wfc.render(mouseGx, mouseGy, progress);

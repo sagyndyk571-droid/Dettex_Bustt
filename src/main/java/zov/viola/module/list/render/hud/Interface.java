@@ -2918,54 +2918,61 @@ public class Interface extends Module {
       }
    }
 
-   private void iqRHm(DrawContext context) {
-      if (this.mc.player != null) {
-         Counter.updateFPS();
-         String nick = Instance.get(NameProtect.class).getCustomName();
-         String fpsText = Counter.getCurrentFPS() + " FPS";
-         String serverText = this.mc.getCurrentServerEntry() != null ? this.mc.getCurrentServerEntry().address : "local";
-         MsdfFont textFont = Fonts.SFMEDIUM.get();
-         MsdfFont boldFont = Fonts.SFBOLD.get();
-         MsdfFont iconsFont = Fonts.ICONS_NURIK.get();
-         MsdfFont alphaFont = Fonts.ALPHADLC.get();
-         float textSize = 7.0F;
-         float iconSize = 7.0F;
-         float iconGap = 1.5F;
-         float entryGap = 6.0F;
-         float skinSize = 12.0F;
-         float padX = 9.0F;
-         float height = 17.0F;
-         int white = ColorProvider.setAlpha(ColorProvider.getColorText(), 255);
-         int accent = ClientPalette.pickTwo(ColorProvider.getColorVisualModules());
-         float brandW = boldFont.getWidth("Viola", textSize) + 1.0F + textFont.getWidth("Client", textSize);
-         float row1W = brandW
-            + entryGap
-            + skinSize
-            + iconGap
-            + textFont.getWidth(nick, textSize)
-            + entryGap
-            + alphaFont.getWidth("n", iconSize)
-            + iconGap
-            + textFont.getWidth(fpsText, textSize)
-            + entryGap
-            + iconsFont.getWidth("Q", iconSize)
-            + iconGap
-            + textFont.getWidth(serverText, textSize);
-         float boxWidth = row1W + padX * 2.0F;
-         int screenW = context.getScaledWindowWidth();
-         float x = (screenW - boxWidth) / 2.0F;
-         int bossBars = this.ryuY6u();
-         float y = 20.0F + bossBars * 13.0F;
-         float radius = 8.0F;
-         this.q4cfy(this.eaunw, x, y, boxWidth, height, radius, 1.0F);
-         float textY = y + (height - textSize) / 2.0F;
-         float iconY = y + (height - iconSize) / 2.0F + 0.75F;
-         float skinY = y + (height - skinSize) / 2.0F;
-         float cx = x + padX;
-         DrawUtil.drawText(boldFont, "Viola", cx, textY, accent, textSize);
-         cx += boldFont.getWidth("Viola", textSize) + 1.0F;
-         DrawUtil.drawText(textFont, "Client", cx, textY, white, textSize);
-         cx += textFont.getWidth("Client", textSize) + entryGap;
+    private void iqRHm(DrawContext context) {
+       if (this.mc.player != null) {
+          Counter.updateFPS();
+          String nick = Instance.get(NameProtect.class).getCustomName();
+          String fpsText = Counter.getCurrentFPS() + " FPS";
+          String serverText = this.mc.getCurrentServerEntry() != null ? this.mc.getCurrentServerEntry().address : "local";
+          MsdfFont textFont = Fonts.SFMEDIUM.get();
+          MsdfFont boldFont = Fonts.SFBOLD.get();
+          MsdfFont iconsFont = Fonts.ICONS_NURIK.get();
+          MsdfFont alphaFont = Fonts.ALPHADLC.get();
+          float textSize = 7.0F;
+          float iconSize = 7.0F;
+          float iconGap = 1.5F;
+          float entryGap = 6.0F;
+          float skinSize = 12.0F;
+          float padX = 9.0F;
+          float height = 17.0F;
+          float logoSize = 12.0F;
+          float logoGap = 3.0F;
+          int white = ColorProvider.setAlpha(ColorProvider.getColorText(), 255);
+          int accentBase = ClientPalette.pickTwo(ColorProvider.getColorVisualModules());
+          float breathe = (float)(Math.sin((float)(System.currentTimeMillis() % 60000L) / 1000.0F * 3.0F) * 0.5F + 0.5F);
+          int accent = ColorProvider.interpolateColor(accentBase, -1, 0.1F + breathe * 0.3F);
+          float brandW = logoSize + logoGap + boldFont.getWidth("Dettex", textSize) + 1.0F + textFont.getWidth("Client", textSize);
+          float row1W = brandW
+             + entryGap
+             + skinSize
+             + iconGap
+             + textFont.getWidth(nick, textSize)
+             + entryGap
+             + alphaFont.getWidth("n", iconSize)
+             + iconGap
+             + textFont.getWidth(fpsText, textSize)
+             + entryGap
+             + iconsFont.getWidth("Q", iconSize)
+             + iconGap
+             + textFont.getWidth(serverText, textSize);
+          float boxWidth = row1W + padX * 2.0F;
+          int screenW = context.getScaledWindowWidth();
+          float x = (screenW - boxWidth) / 2.0F;
+          int bossBars = this.ryuY6u();
+          float y = 20.0F + bossBars * 13.0F;
+          float radius = 8.0F;
+          this.q4cfy(this.eaunw, x, y, boxWidth, height, radius, 1.0F);
+          float textY = y + (height - textSize) / 2.0F;
+          float iconY = y + (height - iconSize) / 2.0F + 0.75F;
+          float skinY = y + (height - skinSize) / 2.0F;
+          float cx = x + padX;
+          float logoY = y + (height - logoSize) / 2.0F;
+          this.dtLogo(context, cx, logoY, logoSize, accent);
+          cx += logoSize + logoGap;
+          DrawUtil.drawText(boldFont, "Dettex", cx, textY, accent, textSize);
+          cx += boldFont.getWidth("Dettex", textSize) + 1.0F;
+          DrawUtil.drawText(textFont, "Client", cx, textY, white, textSize);
+          cx += textFont.getWidth("Client", textSize) + entryGap;
          this.q9dE(context, cx, skinY, skinSize);
          cx += skinSize + iconGap;
          DrawUtil.drawText(textFont, nick, cx, textY, white, textSize);
@@ -2984,7 +2991,30 @@ public class Interface extends Module {
       }
    }
 
-   private void q9dE(DrawContext context, float px, float py, float size) {
+    private void dtLogo(DrawContext context, float px, float py, float size, int themeColor) {
+       try {
+          AbstractTexture tex = this.mc.getTextureManager().getTexture(WATERMARK_TEXTURE);
+          if (tex == null) {
+             return;
+          }
+          int texId = tex.getGlId();
+          if (texId <= 0) {
+             return;
+          }
+          tex.setFilter(true, true);
+          Builder.texture()
+             .size(new SizeState(size, size))
+             .radius(new QuadRadiusState(0.0F))
+             .color(new QuadColorState(themeColor))
+             .texture(0.0F, 0.0F, 1.0F, 1.0F, texId)
+             .smoothness(1.0F)
+             .build()
+             .render(context.getMatrices().peek().getPositionMatrix(), px, py);
+       } catch (Exception ignored) {
+       }
+    }
+
+    private void q9dE(DrawContext context, float px, float py, float size) {
       try {
          AbstractClientPlayerEntity self = this.mc.player instanceof AbstractClientPlayerEntity ? this.mc.player : null;
          Identifier faceTex = this.nQ8z9(this.mc.player, self);

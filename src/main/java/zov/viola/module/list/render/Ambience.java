@@ -118,11 +118,17 @@ public class Ambience extends Module {
    public final BooleanSetting worldSaturation = new BooleanSetting(
       "Насыщенность мира", false
    );
-   public final SliderSetting saturationValue = new SliderSetting(
+    public final SliderSetting saturationValue = new SliderSetting(
          "Насыщенность", 1.0, 0.0, 3.0, 0.05
       )
       .setVisible(() -> this.worldSaturation.getValue());
-   private long duOh = 0L;
+    public final BooleanSetting wetRain = new BooleanSetting(
+       "Мокрый дождь", false
+    );
+    public final BooleanSetting winter = new BooleanSetting(
+       "Зима", false
+    );
+    private long duOh = 0L;
 
    @Override
    public void onEnable() {
@@ -133,12 +139,16 @@ public class Ambience extends Module {
       }
    }
 
-   @Subscribe
-   public void onTick(EventTick event) {
-      if (this.skyShader.getValue()) {
-         this.qGyV();
-      }
-   }
+    @Subscribe
+    public void onTick(EventTick event) {
+       if (this.skyShader.getValue()) {
+          this.qGyV();
+       }
+       if ((this.wetRain.getValue() || this.winter.getValue()) && this.mc.world != null) {
+          this.mc.world.getLevelProperties().setRaining(true);
+          this.mc.world.setRainGradient(1.0F);
+       }
+    }
 
    @Subscribe
    public void onWorldRender(EventWorldRender event) {
@@ -221,7 +231,23 @@ public class Ambience extends Module {
       return this.plasmaSpeed.getFloatValue();
    }
 
-   public boolean isRemoveFogEnabled() {
-      return this.removeFog.getValue();
-   }
+    public boolean isRemoveFogEnabled() {
+       return this.removeFog.getValue();
+    }
+
+    public boolean isWetRain() {
+       return this.wetRain.getValue();
+    }
+
+    public boolean isWinter() {
+       return this.winter.getValue();
+    }
+
+    @Override
+    public void onDisable() {
+       if (this.mc.world != null && !this.wetRain.getValue() && !this.winter.getValue()) {
+          this.mc.world.getLevelProperties().setRaining(false);
+       }
+       super.onDisable();
+    }
 }

@@ -10,15 +10,32 @@ import zov.viola.util.render.builders.states.QuadRadiusState;
 import zov.viola.util.render.builders.states.SizeState;
 
 public class MenuBackgroundRenderer {
-   private static final Identifier BG_ID = Identifier.of("mre", "textures/gui/title/menu_photo.png");
+   private static final Identifier[] BG_IDS = new Identifier[]{
+      Identifier.of("mre", "textures/gui/title/menu_photo.png"),
+      Identifier.of("mre", "textures/gui/title/menu_bg.png"),
+      Identifier.of("mre", "textures/gui/title/menu_bg_blue.png"),
+      Identifier.of("mre", "textures/gui/title/menu_bg_black.png")
+   };
+   private static final String[] BG_NAMES = new String[]{
+      "Фото", "Стандарт", "Синий", "Черный"
+   };
+   private static int index = 0;
    private static final float IMG_RATIO = 1.5F;
+
+   public static void next() {
+      index = (index + 1) % BG_IDS.length;
+   }
+
+   public static String currentName() {
+      return BG_NAMES[index];
+   }
 
    public static void render(DrawContext context) {
       int screenW = context.getScaledWindowWidth();
       int screenH = context.getScaledWindowHeight();
       if (screenW > 0 && screenH > 0) {
          try {
-            AbstractTexture tex = MinecraftClient.getInstance().getTextureManager().getTexture(BG_ID);
+            AbstractTexture tex = MinecraftClient.getInstance().getTextureManager().getTexture(BG_IDS[index]);
             if (tex == null) {
                return;
             }

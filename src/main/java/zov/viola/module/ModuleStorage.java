@@ -111,6 +111,7 @@ import zov.viola.module.list.render.TargetESP;
 import zov.viola.module.list.render.TargetESP2;
 import zov.viola.module.list.render.Tracers;
 import zov.viola.module.list.render.Trails;
+import zov.viola.module.list.render.TrapESP;
 import zov.viola.module.list.render.UseIndicator;
 import zov.viola.module.list.render.ViewModel;
 import zov.viola.module.list.render.Wings;
@@ -185,7 +186,8 @@ public class ModuleStorage implements IMinecraft {
                new FreeLook(),
                new Chams(),
                new GlowEsp(),
-               new Trails(),
+                new Trails(),
+                new TrapESP(),
                new FastExp(),
                new NameProtect(),
                new CrystalSpammer(),

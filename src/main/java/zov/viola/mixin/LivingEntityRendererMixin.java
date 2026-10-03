@@ -103,28 +103,5 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
             }
          }
       }
-
-      if (livingEntity == mc.player && livingEntity.isGliding()) {
-         KillAura killAura = Instance.get(KillAura.class);
-         if (killAura != null && killAura.isEnabled() && killAura.visualElytraRotation.getValue()) {
-            LivingEntity target = killAura.getTarget();
-            if (target != null && target.isAlive() && target.isGliding()) {
-               Vec3d playerPos = livingEntity.getLerpedPos(f);
-               Vec3d targetPos = target.getLerpedPos(f);
-               Vec3d targetLook = target.getRotationVec(f).normalize();
-               Vec3d targetToPlayer = playerPos.subtract(targetPos);
-               double dot = targetToPlayer.dotProduct(targetLook);
-               Vec3d predict = PredictUtils.predict(target, killAura.predictValue.getValue());
-               double distToPredict = playerPos.distanceTo(predict);
-               if (dot > 0.0 && distToPredict < 6.0) {
-                  Vec3d center = targetPos.add(0.0, target.getHeight() / 2.0, 0.0);
-                  Vec2f rotation = RotationUtil.calculate(center);
-                  livingEntityRenderState.bodyYaw = rotation.x;
-                  livingEntityRenderState.yawDegrees = 0.0F;
-                  livingEntityRenderState.pitch = rotation.y;
-               }
-            }
-         }
-      }
    }
 }

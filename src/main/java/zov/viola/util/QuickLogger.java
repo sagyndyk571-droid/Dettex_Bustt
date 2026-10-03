@@ -10,7 +10,7 @@ import zov.viola.obf.D;
 
 public interface QuickLogger {
    static Text getPrefix() {
-      MutableText onetap = Text.literal("ViolaClient");
+       MutableText onetap = Text.literal("DettexClient");
       onetap.setStyle(onetap.getStyle().withColor(Formatting.WHITE));
       MutableText prefix = Text.literal("");
       prefix.setStyle(onetap.getStyle().withColor(Formatting.DARK_GRAY));

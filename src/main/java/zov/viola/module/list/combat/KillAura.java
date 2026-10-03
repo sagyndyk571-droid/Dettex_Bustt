@@ -75,6 +75,10 @@ import zov.viola.util.render.math.GCDFixer;
 import zov.viola.util.render.providers.ColorProvider;
 import zov.viola.util.rotation.Rotation;
 import zov.viola.util.rotation.RotationComponent;
+import zov.viola.util.rotation.apex.ApexMovementFix;
+import zov.viola.util.rotation.apex.ApexRotation;
+import zov.viola.util.rotation.apex.ApexSprintReset;
+import zov.viola.util.rotation.apex.ApexTargetCorrection;
 import zov.viola.util.text.ValueUnit;
 
 @ModuleInformation(
@@ -84,13 +88,7 @@ import zov.viola.util.text.ValueUnit;
 )
 public class KillAura extends Module {
    public final ModeSetting rotation = ModuleSettingDefinitions.killAuraRotation();
-   public final ModeSetting rotationBehavior = new ModeSetting(
-      "Поведение ротации",
-      "Плавная",
-      "Плавная",
-      "Снапы"
-   );
-   private final ModeListSetting tXILr = new ModeListSetting(
+    private final ModeListSetting tXILr = new ModeListSetting(
       "Таргеты",
       new BooleanSetting("Игроки", true),
       new BooleanSetting("Голые", true),
@@ -134,15 +132,7 @@ public class KillAura extends Module {
    public final BooleanSetting smartAim = new BooleanSetting(
       "Умное наведение", true
    );
-   public final BooleanSetting predictate = new BooleanSetting("Предикт", true);
-   public final SliderSetting predictValue = new SliderSetting(
-      "Предикт значение",
-      3.0,
-      1.0,
-      5.0,
-      0.1F
-   );
-   private final SliderSetting id3J = new SliderSetting(
+    private final SliderSetting id3J = new SliderSetting(
          D.k(
             new int[]{1045, 1163, 146, 1230, 1144, 145, 1155, 1231, 1039, 1277, 1277, 1204, 1035, 1167, 1159, 1201, 1142, 1167, 1165},
             new int[]{52, 177, 191, 140}
@@ -177,97 +167,19 @@ public class KillAura extends Module {
          "Плавность", 0.05F, 0.01F, 0.2F, 0.005F
       )
       .setVisible(() -> this.rotation.is("Legit"));
-   public final BooleanSetting elytraSlowdown = new BooleanSetting(
-      D.k(
-         new int[]{1175, 1141, 1257, 1237, 1204, 1150, 1248, 1245, 1208, 1136, 245, 1245, 1200, 101, 1176, 1243, 1208, 1031, 1173, 1232, 1221},
-         new int[]{128, 69, 213, 224}
-      ),
-      true
-   );
-   public final ModeSetting slowdownMode = ModuleSettingDefinitions.killAuraSprintReset();
-   public final SliderSetting slowdownRadius = new SliderSetting(
-         "Радиус замедления",
-         ValueUnit.countable(
-            "блок",
-            "блока",
-            "блоков"
-         ),
-         3.0,
-         1.0,
-         6.0,
-         0.1F
-      )
-      .setVisible(
-         () -> this.elytraSlowdown.getValue()
-            && this.slowdownMode.is("По радиусу")
-      );
-   public final SliderSetting minSpeed = new SliderSetting(
-         "Мин. скорость", 0.3F, 0.1F, 0.9F, 0.05F
-      )
-      .setVisible(
-         () -> this.elytraSlowdown.getValue()
-            && this.slowdownMode.is("По радиусу")
-      );
-   public final SliderSetting preHitTicks = new SliderSetting(
-         "Тики до удара", 3.0, 1.0, 10.0, 1.0
-      )
-      .setVisible(
-         () -> this.elytraSlowdown.getValue()
-            && this.slowdownMode.is("Перед ударом")
-      );
-   public final BooleanSetting hitAfterOvertake = new BooleanSetting(
-      D.k(
-         new int[]{1155, 1146, 1161, 1082, 178, 1024, 1269, 1100, 1196, 98, 1268, 1096, 1235, 1145, 1278, 86, 1197, 1143, 1163, 1091, 1185, 1148, 1270, 1094},
-         new int[]{146, 66, 203, 118}
-      ),
-      true
-   );
-   public final ModeSetting moveFix = new ModeSetting(
+    public final ModeSetting moveFix = new ModeSetting(
       "Коррекция движения",
       "Сфокусированная",
       "Нет",
       "Сфокусированная",
-      "Таргетированная"
+      "Таргетированная",
+      "TargetCorrection"
    );
-   public final BooleanSetting onlySpace = ModuleSettingDefinitions.killAuraOnlySpace();
-   public final BooleanSetting showPredictPoint = new BooleanSetting(
-      D.k(
-         new int[]{1175, 1218, 1123, 1152, 1215, 1228, 1051, 1276, 168, 1219, 1049, 1157, 1212, 1220, 1123, 1266, 168, 1214, 1127, 1271, 1202, 1215},
-         new int[]{136, 252, 89, 176}
-      ),
-      true
-   );
-   public final BooleanSetting themeColor = new BooleanSetting(
-      "Цвет от темы", true
-   );
-   public final ColorSetting customColor = new ColorSetting(
-         "Свой цвет", -9021441
-      )
-      .setVisible(() -> !this.themeColor.getValue());
-   public final BooleanSetting elytraTurnaround = new BooleanSetting(
-      D.k(
-         new int[]{1207, 1265, 1101, 1181, 1193, 1153, 1092, 1261, 183, 1276, 1098, 143, 1242, 1274, 1090, 1261, 1239, 1265, 1087},
-         new int[]{151, 193, 122, 175}
-      ),
-      true
-   );
-   public final BooleanSetting visualElytraRotation = new BooleanSetting(
-      D.k(
-         new int[]{1266, 1183, 1161, 1104, 1232, 1180, 144, 51, 1184, 1177, 1276, 1065, 1232, 135, 1171, 1064, 1240, 1253, 1278, 1112},
-         new int[]{224, 167, 190, 19}
-      ),
-      true
-   );
-   private ElytraTarget eT4bg;
-   public static final BooleanSetting useResolver = new BooleanSetting(
-      "Резольвер (Elytra)", true
-   );
-   public boolean isResolving = false;
-   public Vec3d resolverPoint = null;
-   private final StopWatch rt911 = new StopWatch();
-   public boolean isTurnaroundActive = false;
-   private static final float RANDOM_STRENGTH = 0.75F;
-   public static boolean isSlowdownActive = false;
+    public final BooleanSetting onlySpace = ModuleSettingDefinitions.killAuraOnlySpace();
+    public final ModeSetting slowdownMode = ModuleSettingDefinitions.killAuraSprintReset();
+    private ElytraTarget eT4bg;
+    private final StopWatch rt911 = new StopWatch();
+    private static final float RANDOM_STRENGTH = 0.75F;
    private static final StopWatch stopWatch = new StopWatch();
    private final StopWatch qHm7QCn = new StopWatch();
    private static final long SWORD_SWING_DELAY = 530L;
@@ -277,9 +189,8 @@ public class KillAura extends Module {
    private int zqtFQ0;
    private boolean b72qK3r;
    public float speedAcceleration;
-   public static long lastPhysicalMoveTime;
-   public float preddict;
-   public float lastYaw;
+    public static long lastPhysicalMoveTime;
+    public float lastYaw;
    public float lastPitch;
    private int nVt2ixx;
    private boolean gAk1m;
@@ -399,14 +310,7 @@ public class KillAura extends Module {
    private int nrq1YGg;
    private int gDuag;
    private int gyw7q;
-   private boolean fHdx = false;
-   private final Last dOYfc = context -> {
-      if (this.isEnabled() && this.showPredictPoint.getValue()) {
-         this.axNmn(context.matrixStack(), context.camera(), context.tickCounter().getTickDelta(true));
-      }
-   };
-
-   public ElytraTarget getElytraTarget() {
+    public ElytraTarget getElytraTarget() {
       if (this.eT4bg == null) {
          this.eT4bg = Viola.getInstance().getModuleStorage().get(ElytraTarget.class);
       }
@@ -414,58 +318,13 @@ public class KillAura extends Module {
       return this.eT4bg;
    }
 
-   private void fcDR() {
-      if (this.mc.player != null && this.mc.world != null) {
-         Vec3d eye = this.mc.player.getEyePos();
-         float oppositeYaw = this.mc.player.getYaw() + 180.0F;
-         float searchPitch = -50.0F;
-         int[] yawOffsets = new int[]{0, 30, -30, 45, -45, 60, -60, 90, -90};
-
-         for (int offset : yawOffsets) {
-            float testYaw = oppositeYaw + offset;
-            float radYaw = (float)Math.toRadians(testYaw);
-            float radPitch = (float)Math.toRadians(searchPitch);
-            double x = -Math.sin(radYaw) * Math.cos(radPitch);
-            double y = -Math.sin(radPitch);
-            double z = Math.cos(radYaw) * Math.cos(radPitch);
-            Vec3d checkVec = new Vec3d(x, y, z).normalize().multiply(8.0);
-            Vec3d endPoint = eye.add(checkVec);
-            if (this.mc.world.raycast(new RaycastContext(eye, endPoint, ShapeType.COLLIDER, FluidHandling.NONE, this.mc.player)).getType() == Type.MISS) {
-               this.resolverPoint = endPoint;
-               return;
-            }
-         }
-
-         this.resolverPoint = null;
-      }
-   }
-
-   @Subscribe
+    @Subscribe
    private void onGameUpdate(EventGameUpdate e) {
       if (this.mc.player != null && this.tii1 != null) {
          if (!this.e3lChG()) {
             Viola.getInstance().getModuleStorage().setRandomness(1.0F);
-            if (!AIRotationRecorder.isRecording()) {
-               if (this.isResolving) {
-                  if (this.rt911.isReached(300L)) {
-                     this.isResolving = false;
-                  } else if (this.resolverPoint != null) {
-                     Rotation rot = new Rotation(RotationUtil.calculate(this.resolverPoint));
-                     RotationComponent.update(rot, 360.0F, 360.0F, 360.0F, 360.0F, 0, 1, false);
-                     this.lastYaw = rot.getYaw();
-                     this.lastPitch = rot.getPitch();
-                     return;
-                  }
-               }
-
-               if (this.rotationBehavior.is("Снапы")) {
-                  boolean isReadyToAttack = this.mc.player.getAttackCooldownProgress(1.0F) >= 0.95F && this.ticksToAttack <= 1;
-                  if (!isReadyToAttack) {
-                     return;
-                  }
-               }
-
-               boolean playerOnElytra = this.mc.player.isGliding();
+              if (!AIRotationRecorder.isRecording()) {
+                boolean playerOnElytra = this.mc.player.isGliding();
                if (!playerOnElytra || this.eT4bg != null && this.eT4bg.isEnabled()) {
                   String var3 = this.rotation.getValue();
                   switch (var3) {
@@ -487,63 +346,67 @@ public class KillAura extends Module {
                      case "Sloth":
                         this.updateSlothRotation(this.tii1);
                         break;
-                     case "Legit":
-                        this.updateLegitRotation(this.tii1);
-                  }
+                      case "Legit":
+                         this.updateLegitRotation(this.tii1);
+                         break;
+                      case "ApexTime":
+                         this.updateApexTimeRotation(this.tii1);
+                         break;
+                   }
                }
             }
          }
       }
    }
 
-   @Subscribe
-   private void onChangeSprint(EventChangeSprint e) {
-      if (!this.slowdownMode.is("Легитный")) {
-         if (this.canStopSprinting()) {
-            e.setSprinting(false);
-         }
-      }
-   }
+    @Subscribe
+    private void onChangeSprint(EventChangeSprint e) {
+       if (!this.slowdownMode.is("Легитный")) {
+          if (this.canStopSprinting()) {
+             e.setSprinting(false);
+          }
+       }
+    }
 
    @Subscribe
-   private void onMoveInput(MoveInputEvent event) {
-      if (this.mc.player != null) {
-         if (this.moveFix
-            .is("Таргетированная")) {
-            if (this.tii1 != null) {
-               if (this.mc.player.isGliding()) {
-                  event.forward = 0.0F;
-                  event.strafe = 0.0F;
-               } else if (event.forward != 0.0F || event.strafe != 0.0F) {
-                  float yaw = MathHelper.wrapDegrees(this.mc.player.getYaw());
-                  double dx = this.tii1.getX() - this.mc.player.getX();
-                  double dz = this.tii1.getZ() - this.mc.player.getZ();
-                  double targetAngle = MathHelper.wrapDegrees(Math.toDegrees(Math.atan2(dz, dx)) - 90.0);
-                  float bestForward = 0.0F;
-                  float bestStrafe = 0.0F;
-                  float smallestDiff = Float.MAX_VALUE;
+    private void onMoveInput(MoveInputEvent event) {
+       if (this.mc.player != null && this.tii1 != null) {
+          if (this.mc.player.isGliding()) {
+             if (this.moveFix.is("Таргетированная") || this.moveFix.is("TargetCorrection")) {
+                event.forward = 0.0F;
+                event.strafe = 0.0F;
+             }
+             return;
+          }
+          if (event.forward == 0.0F && event.strafe == 0.0F) {
+             return;
+          }
+          ApexMovementFix.StrafeInput in = new ApexMovementFix.StrafeInput() {
+             public float getForward() {
+                return event.forward;
+             }
 
-                  for (float f = -1.0F; f <= 1.0F; f++) {
-                     for (float s = -1.0F; s <= 1.0F; s++) {
-                        if (f != 0.0F || s != 0.0F) {
-                           double predictedAngle = MathHelper.wrapDegrees(Math.toDegrees(RotationComponent.direction(yaw, f, s)));
-                           float diff = Math.abs(MathHelper.wrapDegrees((float)(targetAngle - predictedAngle)));
-                           if (diff < smallestDiff) {
-                              smallestDiff = diff;
-                              bestForward = f;
-                              bestStrafe = s;
-                           }
-                        }
-                     }
-                  }
+             public float getStrafe() {
+                return event.strafe;
+             }
 
-                  event.forward = bestForward;
-                  event.strafe = bestStrafe;
-               }
-            }
-         }
-      }
-   }
+             public void setForward(float v) {
+                event.forward = v;
+             }
+
+             public void setStrafe(float v) {
+                event.strafe = v;
+             }
+          };
+          if (this.moveFix.is("Таргетированная")) {
+             ApexTargetCorrection.correctFullTarget(this.mc.player, this.lastYaw, this.tii1, in);
+          } else if (this.moveFix.is("TargetCorrection")) {
+             if (this.mc.options.forwardKey.isPressed()) {
+                ApexTargetCorrection.correctFocused(this.mc.player, this.lastYaw, this.tii1, in);
+             }
+          }
+       }
+    }
 
    @Subscribe
    private void onUpdate(EventTick ignored) {
@@ -554,34 +417,12 @@ public class KillAura extends Module {
 
          this.gffav0();
          if (this.tii1 != null) {
-            lastTarget = this.tii1;
-            if (this.elytraSlowdown.getValue() && this.mc.player.isGliding()) {
-               if (this.slowdownMode.is("Перед ударом")) {
-                  isSlowdownActive = this.ticksToAttack <= this.preHitTicks.getValue();
-               } else {
-                  isSlowdownActive = false;
-               }
-            } else {
-               isSlowdownActive = false;
-            }
+             lastTarget = this.tii1;
+             if (this.canStopSprinting() && !this.slowdownMode.is("Легитный")) {
+                this.mc.player.setSprinting(false);
+             }
 
-            Vec3d predict = PredictUtils.predict(this.tii1, this.predictValue.getValue());
-            double distToPredict = this.mc.player.getEyePos().distanceTo(predict);
-            if (this.elytraSlowdown.getValue() && this.mc.player.isGliding()) {
-               if (this.slowdownMode.is("Перед ударом")) {
-                  isSlowdownActive = this.ticksToAttack <= this.preHitTicks.getValue();
-               } else {
-                  isSlowdownActive = distToPredict < 2.7 && this.ticksToAttack <= 2;
-               }
-            } else {
-               isSlowdownActive = false;
-            }
-
-            if (this.canStopSprinting() && !this.slowdownMode.is("Легитный")) {
-               this.mc.player.setSprinting(false);
-            }
-
-            if (this.slowdownMode.is("Легитный") && this.tii1 != null) {
+             if (this.slowdownMode.is("Легитный") && this.tii1 != null) {
                boolean hitWindow = this.ticksToAttack <= 1 || Viola.getInstance().getIdealHitUtils().cooldownIsReached(false);
                if (!this.gAk1m && hitWindow && this.mc.player.isSprinting() && this.mc.player.input.movementForward > 0.0F && Math.random() < 0.6F) {
                   this.gAk1m = true;
@@ -616,24 +457,10 @@ public class KillAura extends Module {
                this.tVN91 = false;
             }
 
-            if (this.canAttack()) {
-               if (useResolver.getValue() && this.mc.player.isGliding()) {
-                  this.mc.player.setVelocity(0.0, 0.0, 0.0);
-                  this.fcDR();
-                  if (this.resolverPoint != null) {
-                     this.isResolving = true;
-                     this.rt911.reset();
-                  }
-               }
-
-               boolean sprintWasOn = this.mc.player.isSprinting();
-               boolean sprintTap = this.rotation.is("Funtime") && sprintWasOn && Math.random() < 0.65F;
-               boolean packetTrickAllowed = !this.slowdownMode.is("Легитный");
-               if (packetTrickAllowed && Math.random() > 0.25) {
-                  this.mc.getNetworkHandler().sendPacket(new PlayerInputC2SPacket(new PlayerInput(false, false, false, false, false, false, false)));
-               }
-
-               if (sprintTap) {
+             if (this.canAttack()) {
+                boolean sprintWasOn = this.mc.player.isSprinting();
+                boolean sprintTap = this.rotation.is("Funtime") && sprintWasOn && Math.random() < 0.65F;
+                if (sprintTap) {
                   this.mc.player.setSprinting(false);
                }
 
@@ -654,8 +481,15 @@ public class KillAura extends Module {
                   this.t0Qs = lP;
                }
 
-               this.mc.interactionManager.attackEntity(this.mc.player, this.tii1);
-               this.mc.player.swingHand(Hand.MAIN_HAND);
+                boolean apexSprintReset = this.slowdownMode.is("Перед ударом");
+                if (apexSprintReset) {
+                   ApexSprintReset.stopSprint(this.mc);
+                }
+                this.mc.interactionManager.attackEntity(this.mc.player, this.tii1);
+                this.mc.player.swingHand(Hand.MAIN_HAND);
+                if (apexSprintReset) {
+                   ApexSprintReset.startSprint(this.mc);
+                }
                this.qHm7QCn.reset();
                if (sprintTap) {
                   this.mc.player.setSprinting(true);
@@ -874,25 +708,13 @@ public class KillAura extends Module {
                }
             }
 
-            this.isTurnaroundActive = false;
-            PlayerEntity player = (PlayerEntity)(Viola.getInstance().getModuleStorage().get(FreeCamera.class).fakePlayer != null
-               ? Viola.getInstance().getModuleStorage().get(FreeCamera.class).fakePlayer
-               : this.mc.player);
-            boolean playerElytra = this.mc.player.isGliding();
-            boolean targetElytra = this.tii1.isGliding();
-            boolean anyElytra = playerElytra || targetElytra;
-            if (this.tii1.isGliding()) {
-               Vec3d predict = PredictUtils.predict(this.tii1, this.predictValue.getValue());
-               double distToPredict = player.getEyePos().distanceTo(predict);
-               this.preddict = this.hitAfterOvertake.getValue() ? 2.7F : 4.0F;
-               if (distToPredict <= this.preddict && this.elytraTurnaround.getValue()) {
-                  this.isTurnaroundActive = true;
-               }
-            }
-
-            if (!Viola.getInstance().getIdealHitUtils().cooldownIsReached(false)) {
-               if (this.rotation.is("Sloth")) {
-                  this.mKytle++;
+             PlayerEntity player = (PlayerEntity)(Viola.getInstance().getModuleStorage().get(FreeCamera.class).fakePlayer != null
+                ? Viola.getInstance().getModuleStorage().get(FreeCamera.class).fakePlayer
+                : this.mc.player);
+             boolean anyElytra = this.mc.player.isGliding() || this.tii1.isGliding();
+             if (!Viola.getInstance().getIdealHitUtils().cooldownIsReached(false)) {
+                if (this.rotation.is("Sloth")) {
+                   this.mKytle++;
                }
 
                return false;
@@ -1033,9 +855,7 @@ public class KillAura extends Module {
    private void updateVanillaRotation(LivingEntity target) {
       if (target != null) {
          Vec3d targetPoint = this.eDxXn(target, BestPoint.getNearestPoint(target), this.distance.getValue());
-         if (target.isGliding() && this.predictate.getValue() && !this.isTurnaroundActive) {
-            targetPoint = PredictUtils.predict(target, this.predictValue.getValue());
-         }
+ 
 
          Rotation rotation = new Rotation(RotationUtil.calculate(targetPoint));
          float targetYaw = rotation.getYaw();
@@ -1231,9 +1051,9 @@ public class KillAura extends Module {
       return from + delta * alpha;
    }
 
-   private Vec3d hOe5Gd(LivingEntity target, boolean bothGliding) {
-      return target.isGliding() ? PredictUtils.predict(target, this.predictValue.getValue()) : target.getBoundingBox().getCenter();
-   }
+    private Vec3d hOe5Gd(LivingEntity target, boolean bothGliding) {
+       return target.getBoundingBox().getCenter();
+    }
 
    private void updateSlothRotation(LivingEntity target) {
       if (this.mc.player != null && target != null) {
@@ -1460,10 +1280,6 @@ public class KillAura extends Module {
    private void updateLonyJirRotation(LivingEntity target) {
       double time = System.nanoTime() * 1.0E-9;
       Rotation angle = new Rotation(RotationUtil.calculate(target.getBoundingBox().getCenter().add(0.0, (float)Math.abs(Math.sin(time * 19.0)) / 2.0F, 0.0)));
-      Vec3d predict = PredictUtils.predict(target, this.predictValue.getValue() + 2.5);
-      if (target.isGliding() && this.predictate.getValue() && !this.isTurnaroundActive) {
-         angle = new Rotation(predict);
-      }
 
       if (!RaytraceUtil.rayTrace(this.mc.player.getRotationVector(), 999.0, target.getBoundingBox().expand(-0.2F))) {
          this.speedAcceleration = this.speedAcceleration + (float)Math.abs(Math.sin(time * 19.0)) / 666.0F;
@@ -1634,14 +1450,7 @@ public class KillAura extends Module {
 
    private void updateSpookyTimeRotation(LivingEntity target) {
       if (target != null) {
-         Vec3d targetPoint;
-         if (target.isGliding() && this.predictate.getValue()) {
-            Vec3d predicted = PredictUtils.predict(target, this.predictValue.getValue());
-            double boxHeight = target.getBoundingBox().maxY - target.getBoundingBox().minY;
-            targetPoint = new Vec3d(predicted.x, predicted.y + boxHeight * 0.8, predicted.z);
-         } else {
-            targetPoint = target.getEyePos();
-         }
+          Vec3d targetPoint = target.getEyePos();
 
          Rotation rotation = new Rotation(RotationUtil.calculate(targetPoint));
          float targetYaw = rotation.getYaw();
@@ -1822,14 +1631,7 @@ public class KillAura extends Module {
 
    private void updateSmoothRotation(LivingEntity target) {
       if (target != null) {
-         Vec3d targetPoint;
-         if (target.isGliding() && this.predictate.getValue()) {
-            Vec3d predicted = PredictUtils.predict(target, this.predictValue.getValue());
-            double boxHeight = target.getBoundingBox().maxY - target.getBoundingBox().minY;
-            targetPoint = new Vec3d(predicted.x, predicted.y + boxHeight * 0.8, predicted.z);
-         } else {
-            targetPoint = target.getEyePos();
-         }
+          Vec3d targetPoint = target.getEyePos();
 
          Rotation angle = new Rotation(RotationUtil.calculate(targetPoint));
          float targetYaw = angle.getYaw();
@@ -1855,9 +1657,7 @@ public class KillAura extends Module {
          float currentYaw = this.mc.player.getYaw();
          boolean isOnTarget = this.legitIsYawOnTarget(target, currentYaw);
          Vec3d targetPoint = this.eDxXn(target, BestPoint.getNearestPoint(target), this.distance.getValue());
-         if (target.isGliding() && this.predictate.getValue() && !this.isTurnaroundActive) {
-            targetPoint = PredictUtils.predict(target, this.predictValue.getValue());
-         }
+ 
 
          Vec2f targetRot = RotationUtil.calculate(targetPoint);
          float yawDelta = MathHelper.wrapDegrees(targetRot.x - currentYaw);
@@ -1884,7 +1684,31 @@ public class KillAura extends Module {
       }
    }
 
-   private boolean legitIsYawOnTarget(LivingEntity target, float currentYaw) {
+    private final ApexRotation apexAim = new ApexRotation();
+
+    private void updateApexTimeRotation(LivingEntity target) {
+       if (target != null && this.mc.player != null) {
+          float tickDelta = this.mc.getRenderTickCounter().getTickDelta(true);
+          float chase = (float)this.wv8f.getValue();
+          ApexRotation.Result r = this.apexAim.apexTick(this.mc.player, target, (float)this.distance.getValue(), chase);
+          if (r == null) {
+             return;
+          }
+          float yawDiff = MathHelper.wrapDegrees(r.targetYaw - this.lastYaw);
+          float pitchDiff = r.targetPitch - this.lastPitch;
+          float newYaw = this.lastYaw + MathHelper.clamp(yawDiff, -r.yawSpeed, r.yawSpeed);
+          float newPitch = this.lastPitch + MathHelper.clamp(pitchDiff, -r.pitchSpeed, r.pitchSpeed);
+          newPitch = MathHelper.clamp(newPitch, -89.0F, 89.0F);
+          newYaw = this.lastYaw + this.b0la8(newYaw - this.lastYaw);
+          newPitch = this.lastPitch + this.b0la8(newPitch - this.lastPitch);
+          Rotation apex = new Rotation(newYaw, newPitch);
+          RotationComponent.update(apex, 360.0F, 360.0F, 360.0F, 360.0F, 0, 1, false);
+          this.lastYaw = apex.getYaw();
+          this.lastPitch = apex.getPitch();
+       }
+    }
+
+    private boolean legitIsYawOnTarget(LivingEntity target, float currentYaw) {
       Vec3d eyePos = this.mc.player.getEyePos();
       Box box = target.getBoundingBox();
       double minDiff = Double.MAX_VALUE;
@@ -1909,10 +1733,7 @@ public class KillAura extends Module {
 
    private void i30S(LivingEntity target) {
       if (target != null) {
-         Vec3d point = this.eDxXn(target, BestPoint.getPoint2(target), 6.0);
-         if (target.isGliding() && this.predictate.getValue() && !this.isTurnaroundActive) {
-            point = PredictUtils.predict(target, this.predictValue.getValue());
-         }
+          Vec3d point = this.eDxXn(target, BestPoint.getPoint2(target), 6.0);
 
          boolean isLooking = RaytraceUtil.rayTrace(this.mc.player.getRotationVector(), 6.0, target.getBoundingBox().expand(0.0, -1.0, 0.0));
          Rotation idealRotation = new Rotation(RotationUtil.calculate(point));
@@ -1949,9 +1770,7 @@ public class KillAura extends Module {
    }
 
    private void updateLonyGriefRotation(LivingEntity target) {
-      Vec3d point = target.isGliding() && this.predictate.getValue() && !this.isTurnaroundActive
-         ? PredictUtils.predict(target, this.predictValue.getValue())
-         : this.eDxXn(target, BestPoint.getPoint(target), 6.0);
+          Vec3d point = this.eDxXn(target, BestPoint.getPoint(target), 6.0);
       Rotation angle = new Rotation(RotationUtil.calculate(point));
       float targetYaw = angle.getYaw();
       float targetPitch = angle.getPitch();
@@ -1988,10 +1807,7 @@ public class KillAura extends Module {
 
    private void updateWellmineRotation(LivingEntity target) {
       Box box = target.getBoundingBox();
-      Vec3d vector = this.eDxXn(target, BestPoint.getMultipoint(target, 6.0), 6.0);
-      if (target.isGliding() && this.predictate.getValue() && !this.isTurnaroundActive) {
-         vector = PredictUtils.predict(target, this.predictValue.getValue());
-      }
+       Vec3d vector = this.eDxXn(target, BestPoint.getMultipoint(target, 6.0), 6.0);
 
       Vec2f angle = RotationUtil.calculate(vector);
       float targetYaw = angle.x;
@@ -2006,10 +1822,7 @@ public class KillAura extends Module {
             this.speedAcceleration += 0.005F;
          }
 
-         Vec3d offset = Vec3d.ZERO;
-         if (this.mc.player.isGliding() && target instanceof PlayerEntity && target.isGliding()) {
-            offset = PredictUtils.predict(target, this.predictValue.getValue());
-         }
+          Vec3d offset = Vec3d.ZERO;
 
          if (this.speedAcceleration >= 0.18 || RaytraceUtil.rayTrace(this.mc.player.getRotationVector(), 6.0, box.offset(offset).expand(-0.5, -1.0, -0.5))) {
             this.b72qK3r = true;
@@ -2057,10 +1870,7 @@ public class KillAura extends Module {
                this.lastPitch = this.mc.player.getPitch();
             }
 
-            Vec3d point = this.eDxXn(target, BestPoint.getPoint(target), 6.0);
-            if (elytraDuel && target.isGliding() && this.predictate.getValue() && !this.isTurnaroundActive) {
-               point = PredictUtils.predict(target, this.predictValue.getValue());
-            }
+             Vec3d point = this.eDxXn(target, BestPoint.getPoint(target), 6.0);
 
             Vec3d eyePos = this.mc.player.getEyePos();
             double deltaX = point.x - eyePos.x;
@@ -2113,63 +1923,8 @@ public class KillAura extends Module {
       }
    }
 
-   private void axNmn(MatrixStack matrices, Camera camera, float tickDelta) {
-      if (this.tii1 != null && this.tii1.isGliding()) {
-         Vec3d predictPos = PredictUtils.predict(this.tii1, this.predictValue.getValue());
-         Vec3d camPos = camera.getPos();
-         double renderX = predictPos.x - camPos.x;
-         double renderY = predictPos.y - camPos.y;
-         double renderZ = predictPos.z - camPos.z;
-         float size = 0.35F;
-         int color = this.themeColor.getValue() ? ColorProvider.getColorClient() : this.customColor.getValue();
-         matrices.push();
-         matrices.translate(renderX, renderY, renderZ);
-         RenderSystem.enableBlend();
-         RenderSystem.defaultBlendFunc();
-         RenderSystem.disableDepthTest();
-         RenderSystem.disableCull();
-         RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-         Matrix4f matrix = matrices.peek().getPositionMatrix();
-         Tessellator tessellator = Tessellator.getInstance();
-         BufferBuilder buffer = tessellator.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-         float r = (color >> 16 & 0xFF) / 255.0F;
-         float g = (color >> 8 & 0xFF) / 255.0F;
-         float b = (color & 0xFF) / 255.0F;
-         float a = 1.0F;
-         buffer.vertex(matrix, -size, -size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, size, -size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, size, -size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, size, -size, size).color(r, g, b, a);
-         buffer.vertex(matrix, size, -size, size).color(r, g, b, a);
-         buffer.vertex(matrix, -size, -size, size).color(r, g, b, a);
-         buffer.vertex(matrix, -size, -size, size).color(r, g, b, a);
-         buffer.vertex(matrix, -size, -size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, -size, size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, size, size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, size, size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, size, size, size).color(r, g, b, a);
-         buffer.vertex(matrix, size, size, size).color(r, g, b, a);
-         buffer.vertex(matrix, -size, size, size).color(r, g, b, a);
-         buffer.vertex(matrix, -size, size, size).color(r, g, b, a);
-         buffer.vertex(matrix, -size, size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, -size, -size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, -size, size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, size, -size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, size, size, -size).color(r, g, b, a);
-         buffer.vertex(matrix, size, -size, size).color(r, g, b, a);
-         buffer.vertex(matrix, size, size, size).color(r, g, b, a);
-         buffer.vertex(matrix, -size, -size, size).color(r, g, b, a);
-         buffer.vertex(matrix, -size, size, size).color(r, g, b, a);
-         BufferRenderer.drawWithGlobalProgram(buffer.end());
-         RenderSystem.enableDepthTest();
-         RenderSystem.enableCull();
-         RenderSystem.disableBlend();
-         matrices.pop();
-      }
-   }
-
-   @Override
-   public void onEnable() {
+    @Override
+    public void onEnable() {
       this.tii1 = null;
       this.zqtFQ0 = 0;
       this.nVt2ixx = 0;
@@ -2185,13 +1940,8 @@ public class KillAura extends Module {
          this.eT4bg = Viola.getInstance().getModuleStorage().get(ElytraTarget.class);
       }
 
-      if (!this.fHdx) {
-         WorldRenderEvents.LAST.register(this.dOYfc);
-         this.fHdx = true;
-      }
-
-      super.onEnable();
-   }
+       super.onEnable();
+    }
 
    @Override
    public void onDisable() {
@@ -2200,10 +1950,8 @@ public class KillAura extends Module {
       this.nVt2ixx = 0;
       this.gAk1m = false;
       this.speedAcceleration = 0.0F;
-      this.zqtFQ0 = 0;
-      this.isResolving = false;
-      this.resolverPoint = null;
-      Viola.getInstance().getModuleStorage().setSpeedAcceleration(0.0F);
+       this.zqtFQ0 = 0;
+       Viola.getInstance().getModuleStorage().setSpeedAcceleration(0.0F);
       Viola.getInstance().getModuleStorage().setRandomness(1.0F);
       this.sKvK6();
       this.b6qI();

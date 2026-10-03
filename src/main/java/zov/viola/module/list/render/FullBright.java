@@ -2,6 +2,7 @@ package zov.viola.module.list.render;
 
 import com.google.common.eventbus.Subscribe;
 import zov.viola.event.list.EventTick;
+import zov.viola.mixin.SimpleOptionAccessor;
 import zov.viola.module.Module;
 import zov.viola.module.ModuleCategory;
 import zov.viola.module.ModuleInformation;
@@ -24,6 +25,10 @@ public class FullBright extends Module {
       return 0.5 * Math.pow(2.0, percent / 20.0);
    }
 
+   private void setGammaUnchecked(double value) {
+      ((SimpleOptionAccessor)(Object) this.mc.options.getGamma()).setRawValue(value);
+   }
+
    @Subscribe
    private void onUpdate(EventTick e) {
       if (this.mc.options != null) {
@@ -34,7 +39,7 @@ public class FullBright extends Module {
 
          double target = eYd0(this.brightness.getValue());
          if (Math.abs(this.mc.options.getGamma().getValue() - target) > 1.0E-4) {
-            this.mc.options.getGamma().setValue(target);
+            this.setGammaUnchecked(target);
          }
       }
    }
@@ -48,7 +53,7 @@ public class FullBright extends Module {
    @Override
    public void onDisable() {
       if (this.b6X0 && this.mc.options != null) {
-         this.mc.options.getGamma().setValue(this.q7ydCI);
+         this.setGammaUnchecked(this.q7ydCI);
       }
 
       this.b6X0 = false;

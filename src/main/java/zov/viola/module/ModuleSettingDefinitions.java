@@ -18,9 +18,10 @@ public final class ModuleSettingDefinitions {
          "Funtime",
          "SPtest",
          "AresMine",
-         "Sloth",
-         "Legit"
-      );
+          "Sloth",
+          "Legit",
+          "ApexTime"
+       );
    }
 
    public static BooleanSetting killAuraOnlySpace() {

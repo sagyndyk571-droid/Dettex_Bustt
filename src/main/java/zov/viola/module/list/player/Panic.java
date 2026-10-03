@@ -123,7 +123,7 @@ public class Panic extends Module {
          byte[] bytes = new byte[256];
          this.w5L6o5.nextBytes(bytes);
          this.z0cV9t = new MessageSignatureData(bytes);
-         chatHud.addMessage(Text.of("ViolaClient: код чтобы вернуть чит:" + this.lvfD), this.z0cV9t, MessageIndicator.system());
+          chatHud.addMessage(Text.of("DettexClient: код чтобы вернуть чит:" + this.lvfD), this.z0cV9t, MessageIndicator.system());
       }
    }
 
