@@ -1,0 +1,21 @@
+{
+    "name":  "bro9i_Hat Mask",
+    "id":  9005,
+    "category":  1,
+    "author":  "LuckyVIP",
+    "pos":  2,
+    "version":  1,
+    "config":  [
+
+               ],
+    "height":  0.1,
+    "scale":  0.95,
+    "x":  0,
+    "y":  0,
+    "z":  0,
+    "yaw":  0,
+    "pitch":  0,
+    "roll":  0,
+    "previewY":  0.2,
+    "previewScale":  1.5
+}

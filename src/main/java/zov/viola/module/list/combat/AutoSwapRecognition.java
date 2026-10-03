@@ -1,0 +1,26 @@
+package zov.viola.module.list.combat;
+
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+
+final class AutoSwapRecognition {
+   private AutoSwapRecognition() {
+   }
+
+   static boolean isSphere(ItemStack stack) {
+      if (stack == null) {
+         return false;
+      } else {
+         boolean playerHead = stack.isOf(Items.PLAYER_HEAD);
+         AttributeModifiersComponent attributes = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+         boolean customSphere = playerHead && attributes != null && !attributes.modifiers().isEmpty();
+         return isSphereCandidate(customSphere, playerHead);
+      }
+   }
+
+   static boolean isSphereCandidate(boolean customSphere, boolean playerHead) {
+      return customSphere || playerHead;
+   }
+}

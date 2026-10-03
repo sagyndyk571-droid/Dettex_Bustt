@@ -1,0 +1,10 @@
+{
+  "vertex": "mre:core/motion_blur",
+  "fragment": "mre:core/motion_blur",
+  "samplers": [
+    { "name": "Sampler0" }
+  ],
+  "uniforms": [
+    { "name": "u_Strength",    "type": "float",     "count": 1,  "values": [0.5] }
+  ]
+}

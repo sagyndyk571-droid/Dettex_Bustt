@@ -1,0 +1,69 @@
+plugins {
+    id 'fabric-loom' version '1.9-SNAPSHOT'
+    id 'maven-publish'
+    id 'java'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/viola.accesswidener")
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+    maven {
+        name = 'Meteor Development'
+        url = 'https://maven.meteordev.org/releases'
+    }
+    maven {
+        name = 'Meteor Development Snapshots'
+        url = 'https://maven.meteordev.org/snapshots'
+    }
+    maven {
+        name = 'babbaj-repo'
+        url = 'https://babbaj.github.io/maven/'
+    }
+    flatDir {
+        dirs 'src/main/resources/META-INF/jars', 'libs'
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.115.1+1.21.4"
+
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+    modImplementation fileTree(dir: 'src/main/resources/META-INF/jars', include: ['*.jar'])
+    include 'dev.babbaj:nether-pathfinder:1.4.1'
+    implementation 'dev.babbaj:nether-pathfinder:1.4.1'
+}
+
+processResources {
+    inputs.property "version", project.version
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+    it.options.encoding = "UTF-8"
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
